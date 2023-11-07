@@ -1,3 +1,5 @@
+const chai = require("chai");
+
 describe("Znany lekarz", () => {
   beforeEach(async () => {
     await browser.url("https://www.znanylekarz.pl/");
@@ -25,8 +27,6 @@ describe("Znany lekarz", () => {
     // verify
     const selector = "ul.list-inline .list-inline-item";
     const tags = $$(selector);
-
-    // verify
     await expect(await tags[0]).toHaveText("Ginekolog");
     await expect(await tags[1]).toHaveText("Ortopeda");
     await expect(await tags[2]).toHaveText("Psycholog");
@@ -126,7 +126,7 @@ describe("Znany lekarz", () => {
   });
 
   it("Find first doctor in popular section ", async () => {
-    // setup 
+    // setup
     const text = await $$("#new-doctors-carousel")[0];
 
     // execute
@@ -135,11 +135,38 @@ describe("Znany lekarz", () => {
     // verify
     await expect(el).toExist();
   });
+
+  async function waitAndClick(searchBtn) {
+    await searchBtn.waitForDisplayed({ timeout: 3000 });
+    await searchBtn.waitForClickable({ timeout: 3000 });
+    await searchBtn.click();
+  }
+
+  it("execute with params", async () => {
+    // setup
+    const mainHeaderSelector = "h1.intro-header";
+
+    // execute
+    const mainHeaderText = await browser.execute(function (selector) {
+      return document.querySelector(selector).innerText;
+    }, mainHeaderSelector);
+    await browser.pause(1000);
+
+    // verify
+    chai.expect(mainHeaderText).to.equal("Znajdź lekarza i umów wizytę");
+  });
+
+  it("Should navigate user to Pro page", async () => {
+    await $('a.btn-primary[href*="pro.znanylekarz.pl"]').click();
+    await browser.waitUntil(
+      async () =>
+        (await $("div.header-content img#znanylekrarz-pro-logo").getAttribute(
+          "alt"
+        )) === "ZnanyLekarz Pro logo"
+    );
+
+    await expect(
+      await $("div.header-content img#znanylekrarz-pro-logo")
+    ).toHaveAttribute("alt", "ZnanyLekarz Pro logo");
+  });
 });
-
-async function waitAndClick(searchBtn) {
-  await searchBtn.waitForDisplayed({ timeout: 3000 });
-  await searchBtn.waitForClickable({ timeout: 3000 });
-  await searchBtn.click();
-}
-
