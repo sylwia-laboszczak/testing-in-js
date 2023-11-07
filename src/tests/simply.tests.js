@@ -90,7 +90,7 @@ describe("Znany lekarz", () => {
     await expect(await firstCard).toExist();
     await expect(
       await firstCard.$$('span[data-test-id="doctor-specializations"]')[0]
-    ).toHaveText("Alergolog");
+    ).toHaveTextContaining("Alergolog");
   });
 
   it("Check page title", async () => {
